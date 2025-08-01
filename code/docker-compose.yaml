@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:80"
     environment:
-      - DATABASE_URL=postgresql://homecare_user:homecare_password@postgres:5432/homecare_db
+      - DATABASE_URL=postgresql+asyncpg://homecare_user:homecare_password@postgres:5432/homecare_db
       - PYTHONPATH=/code
     depends_on:
       postgres:
