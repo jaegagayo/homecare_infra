@@ -1,6 +1,32 @@
 version: '3.8'
 
 services:
+  # Spring Boot 백엔드 API 서버
+  homecare-backend:
+    build:
+      context: ../../homecare_BE
+      dockerfile: Dockerfile
+    container_name: homecare-backend-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/homecare_db
+      - DB_USERNAME=homecare_user
+      - DB_PASSWORD=homecare_password
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - homecare-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
   # Matching API 서버 (FastAPI)
   matching-api:
     build:
@@ -8,7 +34,7 @@ services:
       dockerfile: Dockerfile
     container_name: homecare-matching-api
     ports:
-      - "8000:80"
+      - "8001:80"
     environment:
       - DATABASE_URL=postgresql+asyncpg://homecare_user:homecare_password@postgres:5432/homecare_db
       - PYTHONPATH=/code
