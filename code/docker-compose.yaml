@@ -27,18 +27,20 @@ services:
       start_period: 60s
       retries: 3
 
-  # Matching API 서버 (FastAPI + gRPC)
+  # Matching API 서버
   matching-api:
     build:
       context: ../../homecare_matching
       dockerfile: Dockerfile
     container_name: homecare-matching-api
     ports:
-      - "8002:8000"    # FastAPI 포트
-      - "50051:50051"  # gRPC 포트
+      - "8002:8000"
     env_file:
       - .env
     environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOG_LEVEL=info
       - DATABASE_URL=postgresql+asyncpg://homecare_user:homecare_password@postgres:5432/homecare_db
       - PYTHONPATH=/code
     depends_on:
